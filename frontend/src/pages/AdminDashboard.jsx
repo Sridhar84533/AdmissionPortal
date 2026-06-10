@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Check, X, RefreshCw, Eye, Download, Users, Mail, Phone, BookOpen, GraduationCap, ShieldAlert } from 'lucide-react';
+import { API_BASE } from '../config';
 
 export default function AdminDashboard() {
   const { token } = useAuth();
@@ -16,7 +17,7 @@ export default function AdminDashboard() {
 
   const fetchApplications = async () => {
     try {
-      const res = await fetch('/api/admin/applications', {
+      const res = await fetch(`${API_BASE}/api/admin/applications`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -45,7 +46,7 @@ export default function AdminDashboard() {
     setUpdating(true);
     setMessage({ text: '', type: '' });
     try {
-      const res = await fetch('/api/admin/document/verify', {
+      const res = await fetch(`${API_BASE}/api/admin/document/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +78,7 @@ export default function AdminDashboard() {
     setUpdating(true);
     setMessage({ text: '', type: '' });
     try {
-      const res = await fetch('/api/admin/application/status', {
+      const res = await fetch(`${API_BASE}/api/admin/application/status`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -259,11 +260,11 @@ export default function AdminDashboard() {
 
                         {uploaded ? (
                           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                            <a href={uploaded.path} target="_blank" rel="noreferrer" className="btn btn-secondary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}>
+                            <a href={`${API_BASE}${uploaded.path}`} target="_blank" rel="noreferrer" className="btn btn-secondary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}>
                               <Eye size={14} />
                               View
                             </a>
-                            <a href={uploaded.path} download className="btn btn-secondary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}>
+                            <a href={`${API_BASE}${uploaded.path}`} download className="btn btn-secondary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}>
                               <Download size={14} />
                             </a>
                             

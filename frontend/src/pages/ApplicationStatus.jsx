@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Check, ClipboardList, FileUp, CreditCard, ShieldCheck, UserCheck, CalendarCheck, Award } from 'lucide-react';
+import { API_BASE } from '../config';
 
 export default function ApplicationStatus() {
   const { token } = useAuth();
@@ -12,7 +13,7 @@ export default function ApplicationStatus() {
     if (!token) return;
     const fetchData = async () => {
       try {
-        const appRes = await fetch('/api/application', {
+        const appRes = await fetch(`${API_BASE}/api/application`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (appRes.ok) {
@@ -20,7 +21,7 @@ export default function ApplicationStatus() {
           setAppData(app);
         }
 
-        const apptRes = await fetch('/api/appointments', {
+        const apptRes = await fetch(`${API_BASE}/api/appointments`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (apptRes.ok) {

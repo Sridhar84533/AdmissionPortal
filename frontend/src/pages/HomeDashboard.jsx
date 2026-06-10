@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE } from '../config';
 import { 
   FileText, Award, CreditCard, UploadCloud, 
   Calendar, CheckCircle, AlertTriangle, Info, Bell
@@ -18,7 +19,7 @@ export default function HomeDashboard() {
 
     const fetchData = async () => {
       try {
-        const appRes = await fetch('/api/application', {
+        const appRes = await fetch(`${API_BASE}/api/application`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (appRes.ok) {
@@ -26,7 +27,7 @@ export default function HomeDashboard() {
           setAppData(app);
         }
 
-        const apptRes = await fetch('/api/appointments', {
+        const apptRes = await fetch(`${API_BASE}/api/appointments`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (apptRes.ok) {
@@ -34,7 +35,7 @@ export default function HomeDashboard() {
           setApptData(appt);
         }
 
-        const notifRes = await fetch('/api/notifications', {
+        const notifRes = await fetch(`${API_BASE}/api/notifications`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (notifRes.ok) {

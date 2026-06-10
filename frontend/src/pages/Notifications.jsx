@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Bell, CheckSquare, Info, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { API_BASE } from '../config';
 
 export default function Notifications() {
   const { token } = useAuth();
@@ -10,7 +11,7 @@ export default function Notifications() {
 
   const fetchNotifications = async () => {
     try {
-      const res = await fetch('/api/notifications', {
+      const res = await fetch(`${API_BASE}/api/notifications`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -31,7 +32,7 @@ export default function Notifications() {
   const handleMarkRead = async () => {
     setMarking(true);
     try {
-      const res = await fetch('/api/notifications/read', {
+      const res = await fetch(`${API_BASE}/api/notifications/read`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });

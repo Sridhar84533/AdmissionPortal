@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE } from '../config';
 import {
   LayoutDashboard, BookOpen, User, GraduationCap,
   UploadCloud, CreditCard, Calendar, TrendingUp,
@@ -48,7 +49,7 @@ export const Layout = ({ children }) => {
     if (!token) return;
     const fetch_ = async () => {
       try {
-        const res = await fetch('/api/notifications', {
+        const res = await fetch(`${API_BASE}/api/notifications`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { CreditCard, CheckCircle2, Download, ExternalLink, ShieldCheck, X } from 'lucide-react';
+import { API_BASE } from '../config';
 
 export default function Payments() {
   const { token } = useAuth();
@@ -14,7 +15,7 @@ export default function Payments() {
 
   const fetchApp = async () => {
     try {
-      const res = await fetch('/api/application', {
+      const res = await fetch(`${API_BASE}/api/application`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -40,7 +41,7 @@ export default function Payments() {
     setProcessing(true);
     setMessage({ text: '', type: '' });
     try {
-      const res = await fetch('/api/payments/pay', {
+      const res = await fetch(`${API_BASE}/api/payments/pay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ export default function Payments() {
 
   const handleDownloadReceipt = () => {
     if (!appData) return;
-    const url = `/api/payments/receipt/${appData.applicationNumber}`;
+    const url = `${API_BASE}/api/payments/receipt/${appData.applicationNumber}`;
     // Create temporary link to force file download
     const link = document.createElement('a');
     link.href = url;

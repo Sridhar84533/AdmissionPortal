@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { User, Phone, Home, Save } from 'lucide-react';
+import { API_BASE } from '../config';
 
 export default function PersonalInfo() {
   const { token } = useAuth();
@@ -21,7 +22,7 @@ export default function PersonalInfo() {
     if (!token) return;
     const fetchApp = async () => {
       try {
-        const res = await fetch('/api/application', {
+        const res = await fetch(`${API_BASE}/api/application`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -59,7 +60,7 @@ export default function PersonalInfo() {
     setMessage({ text: '', type: '' });
 
     try {
-      const res = await fetch('/api/application/save', {
+      const res = await fetch(`${API_BASE}/api/application/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

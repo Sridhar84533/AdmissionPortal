@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { MessageSquare, Paperclip, Send, User, ShieldCheck } from 'lucide-react';
+import { API_BASE } from '../config';
 
 export default function SupportFeedback() {
   const { token, user } = useAuth();
@@ -21,7 +22,7 @@ export default function SupportFeedback() {
   const fetchTickets = async () => {
     try {
       const endpoint = user.role === 'admin' ? '/api/admin/support/tickets' : '/api/support';
-      const res = await fetch(endpoint, {
+      const res = await fetch(`${API_BASE}${endpoint}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -30,7 +31,7 @@ export default function SupportFeedback() {
       }
 
       if (user.role === 'applicant') {
-        const appRes = await fetch('/api/application', {
+        const appRes = await fetch(`${API_BASE}/api/application`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (appRes.ok) {
@@ -63,7 +64,7 @@ export default function SupportFeedback() {
     if (file) formData.append('file', file);
 
     try {
-      const res = await fetch('/api/support/create', {
+      const res = await fetch(`${API_BASE}/api/support/create`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -91,7 +92,7 @@ export default function SupportFeedback() {
     if (!replyText) return;
 
     try {
-      const res = await fetch(`/api/support/reply/${ticketId}`, {
+      const res = await fetch(`${API_BASE}/api/support/reply/${ticketId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -252,7 +253,7 @@ export default function SupportFeedback() {
                   </p>
                   <p style={{ fontSize: '0.9rem', marginTop: '0.25rem', color: 'var(--text-muted)' }}>{ticket.message}</p>
                   {ticket.attachment && (
-                    <a href={ticket.attachment} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--primary)', marginTop: '0.5rem', fontWeight: 600 }}>
+                    <a href={`${API_BASE}${ticket.attachment}`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', color: 'var(--primary)', marginTop: '0.5rem', fontWeight: 600 }}>
                       <Paperclip size={12} />
                       View Attachment
                     </a>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Award, Check } from 'lucide-react';
+import { API_BASE } from '../config';
 
 export default function ApplyProgramme() {
   const { token } = useAuth();
@@ -15,7 +16,7 @@ export default function ApplyProgramme() {
     if (!token) return;
     const fetchApp = async () => {
       try {
-        const res = await fetch('/api/application', {
+        const res = await fetch(`${API_BASE}/api/application`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -44,7 +45,7 @@ export default function ApplyProgramme() {
     setMessage({ text: '', type: '' });
 
     try {
-      const res = await fetch('/api/application/save', {
+      const res = await fetch(`${API_BASE}/api/application/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

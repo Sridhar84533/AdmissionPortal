@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { UploadCloud, CheckCircle, AlertTriangle, XCircle, FileText, Trash2, Eye, Download } from 'lucide-react';
+import { API_BASE } from '../config';
 
 export default function DocumentUpload() {
   const { token } = useAuth();
@@ -35,7 +36,7 @@ export default function DocumentUpload() {
 
   const fetchAppDetails = async () => {
     try {
-      const res = await fetch('/api/application', {
+      const res = await fetch(`${API_BASE}/api/application`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -79,7 +80,7 @@ export default function DocumentUpload() {
     formData.append('docName', docName);
 
     try {
-      const res = await fetch('/api/documents/upload', {
+      const res = await fetch(`${API_BASE}/api/documents/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -106,7 +107,7 @@ export default function DocumentUpload() {
 
     setMessage({ text: '', type: '' });
     try {
-      const res = await fetch('/api/documents/delete', {
+      const res = await fetch(`${API_BASE}/api/documents/delete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -255,11 +256,11 @@ export default function DocumentUpload() {
                       </div>
                       
                       <div className="document-actions">
-                        <a href={uploadedDoc.path} target="_blank" rel="noopener noreferrer">
+                        <a href={`${API_BASE}${uploadedDoc.path}`} target="_blank" rel="noopener noreferrer">
                           <Eye size={14} />
                           View
                         </a>
-                        <a href={uploadedDoc.path} download>
+                        <a href={`${API_BASE}${uploadedDoc.path}`} download>
                           <Download size={14} />
                           Download
                         </a>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { GraduationCap, Save } from 'lucide-react';
+import { API_BASE } from '../config';
 
 export default function AcademicInfo() {
   const { token } = useAuth();
@@ -24,7 +25,7 @@ export default function AcademicInfo() {
     if (!token) return;
     const fetchApp = async () => {
       try {
-        const res = await fetch('/api/application', {
+        const res = await fetch(`${API_BASE}/api/application`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -66,7 +67,7 @@ export default function AcademicInfo() {
     setMessage({ text: '', type: '' });
 
     try {
-      const res = await fetch('/api/application/save', {
+      const res = await fetch(`${API_BASE}/api/application/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

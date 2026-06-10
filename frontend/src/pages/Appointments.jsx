@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Calendar, Clock, Video, MapPin, RefreshCw, XCircle, AlertCircle, CheckCircle } from 'lucide-react';
+import { API_BASE } from '../config';
 
 export default function Appointments() {
   const { token } = useAuth();
@@ -17,7 +18,7 @@ export default function Appointments() {
 
   const fetchAppointment = async () => {
     try {
-      const res = await fetch('/api/appointments', {
+      const res = await fetch(`${API_BASE}/api/appointments`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -49,7 +50,7 @@ export default function Appointments() {
     const method = isRescheduling ? 'PUT' : 'POST';
 
     try {
-      const res = await fetch(endpoint, {
+      const res = await fetch(`${API_BASE}${endpoint}`, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ export default function Appointments() {
     setBooking(true);
     setMessage({ text: '', type: '' });
     try {
-      const res = await fetch('/api/appointments/cancel', {
+      const res = await fetch(`${API_BASE}/api/appointments/cancel`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

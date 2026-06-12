@@ -186,7 +186,7 @@ export default function HomeDashboard() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
+      <div className="dashboard-bottom-grid">
         
         {/* Quick Actions & Timeline */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

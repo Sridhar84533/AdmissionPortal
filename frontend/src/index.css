@@ -894,3 +894,136 @@ body.dark-mode .app-table tr:hover {
   font-size: 0.8rem;
   color: var(--text-muted);
 }
+
+/* Responsive Grid Overrides */
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.support-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr;
+  gap: 2rem;
+}
+
+.support-grid.admin {
+  grid-template-columns: 1fr;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.contact-grid-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Table Container scroll behavior */
+.table-container {
+  overflow-x: auto !important;
+}
+
+/* Mobile responsive media queries */
+@media (max-width: 900px) {
+  .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .support-grid, .support-grid.admin {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Vertical Timeline */
+  .timeline {
+    flex-direction: column !important;
+    min-width: unset !important;
+    align-items: flex-start !important;
+    gap: 2rem !important;
+    padding-left: 10px !important;
+  }
+  
+  .timeline::after,
+  .timeline-progress-bar {
+    display: none !important;
+  }
+  
+  .timeline-step {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+    position: relative !important;
+  }
+  
+  .timeline-step-circle {
+    flex-shrink: 0 !important;
+    z-index: 2 !important;
+  }
+  
+  .timeline-step-label {
+    text-align: left !important;
+    max-width: unset !important;
+    margin-top: 0 !important;
+  }
+  
+  .timeline-step:not(:last-child)::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 40px !important;
+    left: 20px !important;
+    width: 2px !important;
+    height: calc(100% + 2rem - 40px) !important;
+    background-color: var(--border) !important;
+    z-index: 1 !important;
+  }
+  
+  .timeline-step.completed:not(:last-child)::after {
+    background-color: var(--primary) !important;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Navbar spacing */
+  .navbar {
+    padding: 1rem !important;
+  }
+  .navbar-title {
+    font-size: 1.1rem !important;
+  }
+  .user-badge {
+    padding: 0.4rem 0.75rem !important;
+    font-size: 0.8rem !important;
+  }
+  .navbar-actions {
+    gap: 0.75rem !important;
+  }
+  .content-container {
+    padding: 1rem !important;
+  }
+  .card-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .contact-grid-two {
+    grid-template-columns: 1fr;
+  }
+  .payment-methods-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

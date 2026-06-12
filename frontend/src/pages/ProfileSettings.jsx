@@ -48,7 +48,7 @@ export default function ProfileSettings() {
           Profile Credentials
         </h3>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1rem' }}>
+        <div className="profile-grid">
           <div>
             <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>FULL NAME</p>
             <p style={{ fontSize: '1.05rem', fontWeight: 700, marginTop: '0.25rem' }}>{user?.name}</p>

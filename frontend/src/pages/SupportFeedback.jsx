@@ -122,7 +122,7 @@ export default function SupportFeedback() {
   const categories = ['Admission Query', 'Payment Issue', 'Document Issue', 'Technical Issue', 'Interview Query'];
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: user.role === 'admin' ? '1fr' : '1.2fr 2fr', gap: '2rem' }}>
+    <div className={`support-grid ${user.role === 'admin' ? 'admin' : ''}`}>
       
       {/* Ticket Creation - Applicants Only */}
       {user.role === 'applicant' && (

@@ -168,7 +168,7 @@ export default function PublicLayout({ children }) {
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem' }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
             gap: '2.5rem',
             marginBottom: '3rem',
           }}>

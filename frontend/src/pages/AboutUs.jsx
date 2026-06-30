@@ -157,7 +157,7 @@ export default function AboutUs() {
         <div style={{
           maxWidth: 1200, margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
           gap: '2.5rem', alignItems: 'center',
         }}>
           {/* Left - story */}
@@ -250,7 +250,7 @@ export default function AboutUs() {
           </div>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
             gap: '1.5rem',
           }}>
             {[
@@ -270,7 +270,7 @@ export default function AboutUs() {
         <div style={{
           maxWidth: 1200, margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
           gap: '4rem', alignItems: 'start',
         }}>
           <div>
@@ -320,7 +320,7 @@ export default function AboutUs() {
           </div>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
             gap: '1.5rem',
           }}>
             {[

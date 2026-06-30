@@ -204,7 +204,7 @@ export default function Contact() {
         <div style={{
           maxWidth: 1200, margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
           gap: '1.5rem',
         }}>
           {[
@@ -221,7 +221,7 @@ export default function Contact() {
         <div style={{
           maxWidth: 1200, margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
           gap: '2.5rem', alignItems: 'start',
         }}>
           {/* Form */}

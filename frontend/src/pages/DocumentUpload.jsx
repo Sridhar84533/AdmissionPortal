@@ -190,7 +190,7 @@ export default function DocumentUpload() {
       {/* Overview Status Grid */}
       <div className="form-card">
         <h3 className="form-section-title">Verification Dashboard Summary</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem', marginTop: '1rem' }}>
           {documentSlots.slice(0, 6).map((slot, idx) => {
             const doc = documents.find(d => d.name === slot.label);
             return (

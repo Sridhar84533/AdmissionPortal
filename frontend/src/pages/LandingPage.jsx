@@ -280,7 +280,7 @@ export default function LandingPage() {
 
         <div style={{
           maxWidth: 1200, margin: '0 auto',
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
           gap: '4rem', alignItems: 'center',
         }}>
           {/* Left */}
@@ -378,7 +378,7 @@ export default function LandingPage() {
         <div style={{
           maxWidth: 1200, margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))',
           gap: '2rem',
         }}>
           {[
@@ -423,7 +423,7 @@ export default function LandingPage() {
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
             gap: '1.5rem',
           }}>
             {[
@@ -462,7 +462,7 @@ export default function LandingPage() {
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
             gap: '1rem', position: 'relative',
           }}>
             {[
@@ -507,7 +507,7 @@ export default function LandingPage() {
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
             gap: '1.5rem',
           }}>
             {[

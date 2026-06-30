@@ -152,7 +152,7 @@ function BlogCard({ post, featured }) {
       <div style={{
         background: '#fff', border: '1px solid #e2e8f0', borderRadius: 20,
         overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
         transition: 'all 0.3s ease',
       }}
         onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 50px rgba(37,99,235,0.1)'; }}
@@ -437,7 +437,7 @@ export default function Blogs() {
           {filtered.length > 0 ? (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
               gap: '1.5rem',
             }}>
               {filtered.map(post => <BlogCard key={post.id} post={post} featured={false} />)}

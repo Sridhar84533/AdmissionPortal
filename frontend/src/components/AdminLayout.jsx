@@ -136,7 +136,7 @@ export const AdminLayout = ({ children }) => {
       </aside>
 
       {/* Main Content */}
-      <main style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+      <main style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Top bar */}
         <header style={{
           display: 'flex',

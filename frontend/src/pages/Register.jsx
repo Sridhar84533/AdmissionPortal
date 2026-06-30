@@ -21,6 +21,9 @@ export default function Register() {
     if (password.length < 6) {
       return setError('Password must be at least 6 characters.');
     }
+    if (!password.includes('#')) {
+      return setError('Password must contain the "#" symbol (e.g. Pass#word1).');
+    }
     if (password !== confirmPassword) {
       return setError('Passwords do not match.');
     }
@@ -135,7 +138,7 @@ export default function Register() {
                 type={showPwd ? 'text' : 'password'}
                 className="form-control"
                 required
-                placeholder="Min. 6 characters"
+                placeholder="Min. 6 chars, must include #"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"

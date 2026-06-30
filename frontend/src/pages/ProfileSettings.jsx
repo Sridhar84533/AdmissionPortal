@@ -23,6 +23,11 @@ export default function ProfileSettings() {
       return;
     }
 
+    if (!newPassword.includes('#')) {
+      setMessage({ text: 'New password must contain the "#" symbol (e.g. Pass#word1)', type: 'error' });
+      return;
+    }
+
     setSubmitting(true);
     setMessage({ text: '', type: '' });
     try {
@@ -102,10 +107,14 @@ export default function ProfileSettings() {
               type="password" 
               className="form-control"
               required
+              placeholder="Min. 6 chars, must include #"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               disabled={submitting}
             />
+            <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.35rem' }}>
+              💡 Password must include the <strong>#</strong> symbol (e.g. <em>MyPass#1</em>)
+            </p>
           </div>
 
           <div className="form-group">

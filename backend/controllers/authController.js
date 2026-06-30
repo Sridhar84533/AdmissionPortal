@@ -15,6 +15,10 @@ export const register = async (req, res) => {
     return res.status(400).json({ message: 'Password must be at least 6 characters' });
   }
 
+  if (!password.includes('#')) {
+    return res.status(400).json({ message: 'Password must contain the "#" symbol' });
+  }
+
   try {
     const userExists = await dbHelper.findUserByEmail(email);
     if (userExists) {
@@ -126,6 +130,14 @@ export const changePassword = async (req, res) => {
 
   if (!oldPassword || !newPassword) {
     return res.status(400).json({ message: 'Please provide both current and new passwords' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ message: 'New password must be at least 6 characters' });
+  }
+
+  if (!newPassword.includes('#')) {
+    return res.status(400).json({ message: 'New password must contain the "#" symbol' });
   }
 
   try {

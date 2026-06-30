@@ -100,7 +100,7 @@ export default function Login() {
               type="email"
               className="form-control"
               required
-              placeholder="you@example.com"
+              placeholder=""
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
@@ -115,7 +115,7 @@ export default function Login() {
                 type={showPwd ? 'text' : 'password'}
                 className="form-control"
                 required
-                placeholder="••••••••"
+                placeholder=""
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"

@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { User, Phone, Home, Save } from 'lucide-react';
 import { API_BASE } from '../config';
+import {
+  COUNTRIES,
+  getIndiaStates,
+  getDistricts,
+  getCities,
+  getPincode
+} from '../data/locationData';
 
 export default function PersonalInfo() {
   const { token } = useAuth();
@@ -48,6 +55,31 @@ export default function PersonalInfo() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFields(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Cascading location handlers
+  const handleCountryChange = (e) => {
+    const country = e.target.value;
+    setFields(prev => ({ ...prev, country, state: '', district: '', city: '', pincode: '' }));
+  };
+
+  const handleStateChange = (e) => {
+    const state = e.target.value;
+    setFields(prev => ({ ...prev, state, district: '', city: '', pincode: '' }));
+  };
+
+  const handleDistrictChange = (e) => {
+    const district = e.target.value;
+    // Auto-fill pincode from first city of district if available
+    const cities = fields.country === 'India' ? getCities(fields.state, district) : [];
+    const autoPincode = cities.length > 0 ? cities[0].pincode : '';
+    setFields(prev => ({ ...prev, district, city: cities.length > 0 ? cities[0].name : '', pincode: autoPincode }));
+  };
+
+  const handleCityChange = (e) => {
+    const cityName = e.target.value;
+    const pin = fields.country === 'India' ? getPincode(fields.state, fields.district, cityName) : '';
+    setFields(prev => ({ ...prev, city: cityName, pincode: pin || prev.pincode }));
   };
 
   const handleCopyAddress = () => {
@@ -273,50 +305,113 @@ export default function PersonalInfo() {
               />
             </div>
 
+            {/* Country */}
             <div className="form-grid">
               <div className="form-group">
-                <label>City *</label>
-                <input 
-                  type="text" name="city" className="form-control"
-                  value={fields.city} onChange={handleChange} required
+                <label>Country *</label>
+                <select
+                  name="country" className="form-control"
+                  value={fields.country} onChange={handleCountryChange} required
                   disabled={isFormDisabled}
-                />
+                >
+                  <option value="">-- Select Country --</option>
+                  {COUNTRIES.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
               </div>
-              <div className="form-group">
-                <label>District *</label>
-                <input 
-                  type="text" name="district" className="form-control"
-                  value={fields.district} onChange={handleChange} required
-                  disabled={isFormDisabled}
-                />
-              </div>
+
+              {/* State */}
               <div className="form-group">
                 <label>State *</label>
-                <input 
-                  type="text" name="state" className="form-control"
-                  value={fields.state} onChange={handleChange} required
-                  disabled={isFormDisabled}
-                />
+                {fields.country === 'India' ? (
+                  <select
+                    name="state" className="form-control"
+                    value={fields.state} onChange={handleStateChange} required
+                    disabled={isFormDisabled || !fields.country}
+                  >
+                    <option value="">-- Select State --</option>
+                    {getIndiaStates().map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text" name="state" className="form-control"
+                    placeholder="Enter state / province"
+                    value={fields.state} onChange={handleChange} required
+                    disabled={isFormDisabled || !fields.country}
+                  />
+                )}
+              </div>
+
+              {/* District */}
+              <div className="form-group">
+                <label>District *</label>
+                {fields.country === 'India' ? (
+                  <select
+                    name="district" className="form-control"
+                    value={fields.district} onChange={handleDistrictChange} required
+                    disabled={isFormDisabled || !fields.state}
+                  >
+                    <option value="">-- Select District --</option>
+                    {getDistricts(fields.state).map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text" name="district" className="form-control"
+                    placeholder="Enter district"
+                    value={fields.district} onChange={handleChange} required
+                    disabled={isFormDisabled || !fields.state}
+                  />
+                )}
               </div>
             </div>
 
             <div className="form-grid">
+              {/* City */}
+              <div className="form-group">
+                <label>City *</label>
+                {fields.country === 'India' && fields.district ? (
+                  <select
+                    name="city" className="form-control"
+                    value={fields.city} onChange={handleCityChange} required
+                    disabled={isFormDisabled || !fields.district}
+                  >
+                    <option value="">-- Select City --</option>
+                    {getCities(fields.state, fields.district).map(c => (
+                      <option key={c.name} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text" name="city" className="form-control"
+                    placeholder="Enter city"
+                    value={fields.city} onChange={handleChange} required
+                    disabled={isFormDisabled || !fields.district}
+                  />
+                )}
+              </div>
+
+              {/* Pincode — auto-filled for India, manual otherwise */}
               <div className="form-group">
                 <label>Pincode *</label>
-                <input 
+                <input
                   type="text" name="pincode" className="form-control"
+                  placeholder={fields.country === 'India' ? 'Auto-filled on city select' : 'Enter pincode / postal code'}
                   value={fields.pincode} onChange={handleChange} required
                   disabled={isFormDisabled}
+                  style={fields.country === 'India' && fields.pincode ? { background: 'rgba(37,99,235,0.06)', fontWeight: 600 } : {}}
                 />
+                {fields.country === 'India' && fields.pincode && (
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-verified)', marginTop: '0.25rem' }}>
+                    ✓ Pincode auto-filled
+                  </p>
+                )}
               </div>
-              <div className="form-group">
-                <label>Country *</label>
-                <input 
-                  type="text" name="country" className="form-control"
-                  value={fields.country} onChange={handleChange} required
-                  disabled={isFormDisabled}
-                />
-              </div>
+
               <div style={{ visibility: 'hidden' }}></div>
             </div>
           </div>

@@ -109,7 +109,7 @@ export default function Register() {
               type="text"
               className="form-control"
               required
-              placeholder="John Doe"
+              placeholder=""
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoComplete="name"
@@ -123,7 +123,7 @@ export default function Register() {
               type="email"
               className="form-control"
               required
-              placeholder="you@example.com"
+              placeholder=""
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
@@ -138,7 +138,7 @@ export default function Register() {
                 type={showPwd ? 'text' : 'password'}
                 className="form-control"
                 required
-                placeholder="Min. 6 chars, must include #"
+                placeholder=""
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"

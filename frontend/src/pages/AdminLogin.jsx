@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck } from 'lucide-react';
@@ -10,6 +10,13 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Wake up the Render backend immediately so it's ready by the time the user hits submit
+  useEffect(() => {
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      fetch('https://admissionportal-backend.onrender.com/', { method: 'GET', mode: 'no-cors' }).catch(() => {});
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

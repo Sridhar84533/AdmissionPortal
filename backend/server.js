@@ -43,6 +43,10 @@ app.use((req, res, next) => {
 
 // --- API Routes ---
 
+// Health-check / wakeup ping (no auth, instant response)
+app.get('/', (_req, res) => res.json({ status: 'ok', ts: Date.now() }));
+app.get('/health', (_req, res) => res.json({ status: 'ok', ts: Date.now() }));
+
 // Authentication
 app.post('/api/auth/register', authController.register);
 app.post('/api/auth/login', authController.login);

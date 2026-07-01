@@ -20,23 +20,27 @@ export const AuthProvider = ({ children }) => {
 
   // Rehydrate both sessions from localStorage on mount
   useEffect(() => {
-    // One-time migration: clear the old shared keys from before this fix
-    if (localStorage.getItem('token') || localStorage.getItem('user')) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
+    try {
+      // One-time migration: clear the old shared keys from before this fix
+      if (localStorage.getItem('token') || localStorage.getItem('user')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
 
-    const storedApplicant = localStorage.getItem('applicantUser');
-    if (storedApplicant && applicantToken) {
-      try { setApplicantUser(JSON.parse(storedApplicant)); } catch (_) {}
-    }
+      const storedApplicant = localStorage.getItem('applicantUser');
+      if (storedApplicant && applicantToken) {
+        setApplicantUser(JSON.parse(storedApplicant));
+      }
 
-    const storedAdmin = localStorage.getItem('adminUser');
-    if (storedAdmin && adminToken) {
-      try { setAdminUser(JSON.parse(storedAdmin)); } catch (_) {}
+      const storedAdmin = localStorage.getItem('adminUser');
+      if (storedAdmin && adminToken) {
+        setAdminUser(JSON.parse(storedAdmin));
+      }
+    } catch (err) {
+      console.error("Error during session rehydration:", err);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -146,7 +150,18 @@ export const AuthProvider = ({ children }) => {
       changePassword,
       loading
     }}>
-      {!loading && children}
+      {loading ? (
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', fontFamily: 'system-ui, -apple-system, sans-serif', backgroundColor: '#f5f7fa', color: '#1e293b' }}>
+          <div style={{ width: '40px', height: '40px', border: '4px solid #e2e8f0', borderTop: '4px solid #2563eb', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+          <p style={{ marginTop: '1rem', fontWeight: 600, fontSize: '0.95rem' }}>Syncing Session...</p>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      ) : children}
     </AuthContext.Provider>
   );
 };

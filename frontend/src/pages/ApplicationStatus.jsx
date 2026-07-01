@@ -37,6 +37,29 @@ export default function ApplicationStatus() {
     fetchData();
   }, [token]);
 
+  const handleDownloadOfferLetter = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/application/offer-letter/${appData.applicationNumber}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Failed to download offer letter');
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Offer_Letter_${appData.applicationNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '2rem' }}>Loading timeline status...</div>;
   }
@@ -46,9 +69,9 @@ export default function ApplicationStatus() {
   const isDocsUploaded = appData?.documents && appData.documents.length >= 3; // at least 3 uploaded
   const isFeePaid = appData?.paymentStatus === 'Paid';
   const isVerified = appData?.status === 'Verified' || appData?.status === 'Admission Approved' || appData?.status === 'Offer Letter Generated';
-  const isInterviewScheduled = apptData !== null;
   const isAdmissionApproved = appData?.status === 'Admission Approved' || appData?.status === 'Offer Letter Generated';
   const isOfferLetterGenerated = appData?.status === 'Offer Letter Generated';
+  const isInterviewScheduled = apptData !== null || isAdmissionApproved || isOfferLetterGenerated;
 
   // Stepper steps configuration
   const steps = [
@@ -130,7 +153,7 @@ export default function ApplicationStatus() {
             </p>
           </div>
           <button 
-            onClick={() => alert('Mocking Provisional Offer Letter PDF download...')}
+            onClick={handleDownloadOfferLetter}
             className="btn btn-primary"
             style={{ padding: '0.85rem 2.5rem' }}
           >

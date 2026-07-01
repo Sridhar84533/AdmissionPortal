@@ -96,12 +96,13 @@ export const updateApplicationStatus = async (req, res) => {
 
     const updatedApp = await dbHelper.updateApplicationByNumber(applicationNumber, { status });
 
+    const userId = application.userId._id || application.userId;
     let type = 'info';
     if (status === 'Admission Approved') type = 'success';
     if (status === 'Rejected') type = 'error';
 
     await dbHelper.createNotification(
-      application.userId._id || application.userId,
+      userId,
       `Your application status has been updated to: ${status}.`,
       type
     );
@@ -109,8 +110,18 @@ export const updateApplicationStatus = async (req, res) => {
     // If status is Admission Approved, automatically create a dummy Offer Letter note
     if (status === 'Admission Approved') {
       await dbHelper.createNotification(
-        application.userId._id || application.userId,
+        userId,
         'Congratulations! Your Admission has been approved. Your Offer Letter is now available in your dashboard.',
+        'success'
+      );
+    }
+
+    // If Offer Letter is Generated, delete the appointment (remove from dashboard) and notify user
+    if (status === 'Offer Letter Generated') {
+      await dbHelper.deleteAppointment(userId);
+      await dbHelper.createNotification(
+        userId,
+        'Congratulations! Your provisional Offer Letter has been generated. You can now download it from your Application Status tab.',
         'success'
       );
     }
@@ -123,5 +134,75 @@ export const updateApplicationStatus = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error updating application status' });
+  }
+};
+
+export const getAppointmentByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const appointment = await dbHelper.findAppointmentByUser(userId);
+    res.json(appointment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error retrieving appointment' });
+  }
+};
+
+export const scheduleAppointment = async (req, res) => {
+  try {
+    const { userId, date, time, mode } = req.body;
+
+    if (!userId || !date || !time) {
+      return res.status(400).json({ message: 'Missing required scheduling parameters' });
+    }
+
+    const updatedAppt = await dbHelper.updateAppointment(userId, {
+      date,
+      time,
+      mode: mode || 'Online',
+      status: 'Approved'
+    });
+
+    // Update application status to Under Review if Submitted
+    const application = await dbHelper.findApplicationByUser(userId);
+    if (application && application.status === 'Submitted') {
+      await dbHelper.updateApplication(userId, { status: 'Under Review' });
+    }
+
+    await dbHelper.createNotification(
+      userId,
+      `Your entrance verification interview has been scheduled by the Admissions Team for ${date} at ${time} (${mode || 'Online'}).`,
+      'info'
+    );
+
+    res.json({
+      message: 'Appointment scheduled successfully',
+      appointment: updatedAppt
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error scheduling appointment' });
+  }
+};
+
+export const deleteAppointmentByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    if (!userId) {
+      return res.status(400).json({ message: 'Missing userId' });
+    }
+
+    await dbHelper.deleteAppointment(userId);
+
+    await dbHelper.createNotification(
+      userId,
+      `Your scheduled interview appointment has been cancelled/removed by the Admissions Team.`,
+      'warning'
+    );
+
+    res.json({ message: 'Appointment cancelled/removed successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error deleting appointment' });
   }
 };

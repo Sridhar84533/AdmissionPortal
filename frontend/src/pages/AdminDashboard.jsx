@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Check, X, RefreshCw, Eye, Download, Users, Mail, Phone, BookOpen, GraduationCap, ShieldAlert } from 'lucide-react';
+import { Check, X, RefreshCw, Eye, Download, Users, Mail, Phone, BookOpen, GraduationCap, ShieldAlert, Calendar } from 'lucide-react';
 import { API_BASE } from '../config';
 
 export default function AdminDashboard() {
@@ -14,6 +14,40 @@ export default function AdminDashboard() {
   const [rejectComment, setRejectComment] = useState('');
   const [activeRejectDoc, setActiveRejectDoc] = useState('');
   const [message, setMessage] = useState({ text: '', type: '' });
+
+  // Appointment states
+  const [selectedAppt, setSelectedAppt] = useState(null);
+  const [apptLoading, setApptLoading] = useState(false);
+  const [apptDate, setApptDate] = useState('');
+  const [apptTime, setApptTime] = useState('');
+  const [apptMode, setApptMode] = useState('Online');
+
+  const fetchSelectedAppointment = async (userId) => {
+    if (!userId) return;
+    setApptLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/appointment/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedAppt(data);
+        if (data) {
+          setApptDate(data.date || '');
+          setApptTime(data.time || '');
+          setApptMode(data.mode || 'Online');
+        } else {
+          setApptDate('');
+          setApptTime('');
+          setApptMode('Online');
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching user appointment:', err);
+    } finally {
+      setApptLoading(false);
+    }
+  };
 
   const fetchApplications = async () => {
     try {
@@ -41,6 +75,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (token) fetchApplications();
   }, [token]);
+
+  useEffect(() => {
+    if (selectedApp && token) {
+      fetchSelectedAppointment(selectedApp.userId._id || selectedApp.userId);
+    }
+  }, [selectedApp, token]);
 
   const handleDocVerify = async (docName, status, comment = '') => {
     setUpdating(true);
@@ -94,6 +134,62 @@ export default function AdminDashboard() {
       if (!res.ok) throw new Error(data.message || 'Status change failed');
 
       setMessage({ text: `Application status updated to ${newStatus}.`, type: 'success' });
+      fetchApplications();
+      fetchSelectedAppointment(selectedApp.userId._id || selectedApp.userId);
+    } catch (err) {
+      setMessage({ text: err.message, type: 'error' });
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleScheduleAppt = async (e) => {
+    e.preventDefault();
+    if (!apptDate || !apptTime) {
+      setMessage({ text: 'Please fill date and time.', type: 'error' });
+      return;
+    }
+    setUpdating(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/appointment/schedule`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          userId: selectedApp.userId._id || selectedApp.userId,
+          date: apptDate,
+          time: apptTime,
+          mode: apptMode
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Scheduling failed');
+      setMessage({ text: 'Interview scheduled successfully!', type: 'success' });
+      fetchSelectedAppointment(selectedApp.userId._id || selectedApp.userId);
+      fetchApplications();
+    } catch (err) {
+      setMessage({ text: err.message, type: 'error' });
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleCancelAppt = async () => {
+    if (!window.confirm('Are you sure you want to cancel/remove this appointment?')) return;
+    setUpdating(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/appointment/cancel/${selectedApp.userId._id || selectedApp.userId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Cancellation failed');
+      setMessage({ text: 'Appointment cancelled/removed successfully.', type: 'success' });
+      setSelectedAppt(null);
+      setApptDate('');
+      setApptTime('');
       fetchApplications();
     } catch (err) {
       setMessage({ text: err.message, type: 'error' });
@@ -221,6 +317,104 @@ export default function AdminDashboard() {
                   <option value="Offer Letter Generated">Offer Letter Generated</option>
                 </select>
               </div>
+            </div>
+
+            {/* Interview Schedule Management Card */}
+            <div className="form-card">
+              <h3 className="form-section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Calendar size={20} />
+                Interview / Appointment Management
+              </h3>
+
+              {apptLoading ? (
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Loading appointment details...</p>
+              ) : selectedAppt ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '1rem',
+                    backgroundColor: 'var(--bg-app)',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--border)'
+                  }}>
+                    <div>
+                      <p style={{ fontSize: '0.9rem', fontWeight: 700 }}>
+                        Scheduled Interview: {new Date(selectedAppt.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                      </p>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                        Time: {selectedAppt.time} | Mode: {selectedAppt.mode} | Status: {selectedAppt.status}
+                      </p>
+                    </div>
+                    <button 
+                      onClick={handleCancelAppt}
+                      className="btn btn-danger"
+                      style={{ padding: '0.4rem 1rem', fontSize: '0.85rem' }}
+                      disabled={updating}
+                    >
+                      Cancel / Remove
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleScheduleAppt} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1rem' }}>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    No interview is scheduled for this applicant. Fill in the details below to schedule an interview.
+                  </p>
+                  <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                    <div className="form-group">
+                      <label>Interview Date *</label>
+                      <input 
+                        type="date" 
+                        className="form-control"
+                        required
+                        value={apptDate}
+                        onChange={(e) => setApptDate(e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
+                        disabled={updating}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Interview Time Slot *</label>
+                      <select 
+                        className="form-control"
+                        required
+                        value={apptTime}
+                        onChange={(e) => setApptTime(e.target.value)}
+                        disabled={updating}
+                      >
+                        <option value="">-- Choose Slot --</option>
+                        <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
+                        <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
+                        <option value="02:00 PM - 02:30 PM">02:00 PM - 02:30 PM</option>
+                        <option value="03:30 PM - 04:00 PM">03:30 PM - 04:00 PM</option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Interview Mode *</label>
+                      <select 
+                        className="form-control"
+                        required
+                        value={apptMode}
+                        onChange={(e) => setApptMode(e.target.value)}
+                        disabled={updating}
+                      >
+                        <option value="Online">Online (Video Meet)</option>
+                        <option value="Offline">Offline (Campus Visit)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button 
+                    type="submit"
+                    className="btn btn-primary"
+                    style={{ width: 'fit-content', padding: '0.5rem 1.5rem', backgroundColor: '#1e293b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    disabled={updating}
+                  >
+                    Schedule Interview
+                  </button>
+                </form>
+              )}
             </div>
 
             {/* Document Verification Section */}

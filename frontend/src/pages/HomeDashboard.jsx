@@ -172,11 +172,15 @@ export default function HomeDashboard() {
             <h4>Interview Status</h4>
             <div style={{ marginTop: '0.5rem' }}>
               <span className={`badge ${
-                apptData 
-                  ? apptData.status === 'Approved' ? 'badge-verified' : 'badge-review'
-                  : 'badge-draft'
+                (appData?.status === 'Admission Approved' || appData?.status === 'Offer Letter Generated')
+                  ? 'badge-verified'
+                  : apptData 
+                    ? apptData.status === 'Approved' ? 'badge-verified' : 'badge-review'
+                    : 'badge-draft'
               }`}>
-                {apptData ? apptData.status : 'Not Scheduled'}
+                {(appData?.status === 'Admission Approved' || appData?.status === 'Offer Letter Generated')
+                  ? 'Completed'
+                  : apptData ? apptData.status : 'Not Scheduled'}
               </span>
             </div>
           </div>

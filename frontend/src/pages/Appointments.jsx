@@ -6,29 +6,26 @@ import { API_BASE } from '../config';
 export default function Appointments() {
   const { token } = useAuth();
   const [apptData, setApptData] = useState(null);
+  const [appStatus, setAppStatus] = useState('');
   const [loading, setLoading] = useState(true);
-  const [booking, setBooking] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
-  
-  // Form values
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [mode, setMode] = useState('Online');
-  const [isRescheduling, setIsRescheduling] = useState(false);
 
-  const fetchAppointment = async () => {
+  const fetchData = async () => {
     try {
+      const appRes = await fetch(`${API_BASE}/api/application`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (appRes.ok) {
+        const app = await appRes.json();
+        setAppStatus(app.status);
+      }
+
       const res = await fetch(`${API_BASE}/api/appointments`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
         setApptData(data);
-        if (data) {
-          setDate(data.date);
-          setTime(data.time);
-          setMode(data.mode);
-        }
       }
     } catch (err) {
       console.error(err);
@@ -38,67 +35,8 @@ export default function Appointments() {
   };
 
   useEffect(() => {
-    if (token) fetchAppointment();
+    if (token) fetchData();
   }, [token]);
-
-  const handleBook = async (e) => {
-    e.preventDefault();
-    setBooking(true);
-    setMessage({ text: '', type: '' });
-
-    const endpoint = isRescheduling ? '/api/appointments/reschedule' : '/api/appointments/book';
-    const method = isRescheduling ? 'PUT' : 'POST';
-
-    try {
-      const res = await fetch(`${API_BASE}${endpoint}`, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ date, time, mode })
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Operation failed');
-
-      setApptData(data.appointment);
-      setMessage({ text: isRescheduling ? 'Appointment rescheduled successfully!' : 'Appointment booked successfully!', type: 'success' });
-      setIsRescheduling(false);
-      fetchAppointment();
-    } catch (err) {
-      setMessage({ text: err.message, type: 'error' });
-    } finally {
-      setBooking(false);
-    }
-  };
-
-  const handleCancel = async () => {
-    if (!window.confirm('Are you sure you want to cancel your upcoming appointment?')) return;
-
-    setBooking(true);
-    setMessage({ text: '', type: '' });
-    try {
-      const res = await fetch(`${API_BASE}/api/appointments/cancel`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'Cancellation failed');
-      }
-
-      setApptData(null);
-      setDate('');
-      setTime('');
-      setMessage({ text: 'Appointment cancelled successfully.', type: 'success' });
-    } catch (err) {
-      setMessage({ text: err.message, type: 'error' });
-    } finally {
-      setBooking(false);
-    }
-  };
 
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '2rem' }}>Loading interview schedule...</div>;
@@ -130,8 +68,19 @@ export default function Appointments() {
         </div>
       )}
 
-      {/* Appointment Information Card if scheduled */}
-      {apptData && !isRescheduling ? (
+      {/* Admission Process Completed Screen */}
+      {(appStatus === 'Admission Approved' || appStatus === 'Offer Letter Generated') ? (
+        <div className="form-card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+          <CheckCircle size={48} style={{ color: 'var(--color-verified)', marginBottom: '1rem' }} />
+          <h3 style={{ fontFamily: 'Outfit', fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+            Admission Process Completed!
+          </h3>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '500px', margin: '0 auto' }}>
+            Congratulations! Your admission process has been successfully completed and approved. You no longer have any pending entrance interview slots.
+          </p>
+        </div>
+      ) : apptData && !isRescheduling ? (
+        /* Appointment Information Card if scheduled */
         <div className="form-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
             <div>
@@ -176,104 +125,22 @@ export default function Appointments() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button 
-              className="btn btn-secondary" 
-              onClick={() => setIsRescheduling(true)}
-              disabled={booking}
-            >
-              <RefreshCw size={16} />
-              Reschedule
-            </button>
-            <button 
-              className="btn btn-danger" 
-              onClick={handleCancel}
-              disabled={booking}
-            >
-              <XCircle size={16} />
-              Cancel Appointment
-            </button>
+          <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontStyle: 'italic' }}>
+              * This interview has been scheduled by the Admissions Admin. If you need to make changes, please contact the support desk.
+            </p>
           </div>
         </div>
       ) : (
-        /* Booking / Rescheduling Form */
-        <div className="form-card">
-          <h3 className="form-section-title">
-            <Calendar size={20} />
-            {isRescheduling ? 'Reschedule Interview Slot' : 'Book Interview Appointment'}
+        /* Read-only No Appointment Message */
+        <div className="form-card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+          <Calendar size={48} style={{ color: 'var(--text-muted)', marginBottom: '1rem', opacity: 0.5 }} />
+          <h3 style={{ fontFamily: 'Outfit', fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+            No Interview Scheduled Yet
           </h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-            Select your preferred slot from available dates. Entrance interviews will help verify eligibility.
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '500px', margin: '0 auto' }}>
+            Your entrance verification interview will be scheduled by the Admissions Team once your submitted details and certificates have been reviewed. You will receive an alert and notification once scheduled.
           </p>
-
-          <form onSubmit={handleBook} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Interview Date *</label>
-                <input 
-                  type="date" 
-                  className="form-control"
-                  required
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                  disabled={booking}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Interview Time *</label>
-                <select 
-                  className="form-control"
-                  required
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  disabled={booking}
-                >
-                  <option value="">-- Choose Slot --</option>
-                  <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
-                  <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
-                  <option value="02:00 PM - 02:30 PM">02:00 PM - 02:30 PM</option>
-                  <option value="03:30 PM - 04:00 PM">03:30 PM - 04:00 PM</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Interview Mode *</label>
-                <select 
-                  className="form-control"
-                  required
-                  value={mode}
-                  onChange={(e) => setMode(e.target.value)}
-                  disabled={booking}
-                >
-                  <option value="Online">Online (Video Meet)</option>
-                  <option value="Offline">Offline (Campus Visit)</option>
-                </select>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-              <button 
-                type="submit" 
-                className="btn btn-primary"
-                disabled={booking}
-              >
-                {booking ? 'Scheduling...' : isRescheduling ? 'Confirm Reschedule' : 'Book Appointment'}
-              </button>
-              
-              {isRescheduling && (
-                <button 
-                  type="button" 
-                  className="btn btn-secondary"
-                  onClick={() => setIsRescheduling(false)}
-                  disabled={booking}
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
-          </form>
         </div>
       )}
 

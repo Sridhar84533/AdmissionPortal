@@ -52,6 +52,7 @@ app.put('/api/auth/password', auth, authController.changePassword);
 app.get('/api/application', auth, applicationController.getApplication);
 app.post('/api/application/save', auth, applicationController.saveApplication);
 app.post('/api/application/submit', auth, applicationController.submitApplication);
+app.get('/api/application/offer-letter/:appNumber', auth, applicationController.generateOfferLetterPDF);
 
 // Documents
 app.post('/api/documents/upload', auth, documentController.upload.single('file'), documentController.uploadDocument);
@@ -95,6 +96,9 @@ app.get('/api/admin/applications', auth, adminOnly, adminController.getApplicati
 app.post('/api/admin/document/verify', auth, adminOnly, adminController.verifyDocument);
 app.post('/api/admin/application/status', auth, adminOnly, adminController.updateApplicationStatus);
 app.get('/api/admin/support/tickets', auth, adminOnly, supportController.getAllTicketsAdmin);
+app.get('/api/admin/appointment/:userId', auth, adminOnly, adminController.getAppointmentByUser);
+app.post('/api/admin/appointment/schedule', auth, adminOnly, adminController.scheduleAppointment);
+app.delete('/api/admin/appointment/cancel/:userId', auth, adminOnly, adminController.deleteAppointmentByUser);
 
 // Basic root route
 app.get('/', (req, res) => {

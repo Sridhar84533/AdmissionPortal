@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { ShieldCheck } from 'lucide-react';
 
 export default function AdminLogin() {
-  const { login } = useAuth();
+  const { adminLogin } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,12 +16,12 @@ export default function AdminLogin() {
     setError('');
     setLoading(true);
     try {
-      const loggedUser = await login(email, password);
+      const loggedUser = await adminLogin(email, password);
       if (loggedUser.role !== 'admin') {
         setError('Access denied. Admin credentials required.');
-        // Log out the non-admin user immediately
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        // Remove the wrongly-stored admin session
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
         return;
       }
       navigate('/admin');
@@ -100,7 +100,7 @@ export default function AdminLogin() {
               type="email"
               className="form-control"
               required
-              placeholder="admin@example.com"
+              placeholder=""
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               id="admin-email"
@@ -113,7 +113,7 @@ export default function AdminLogin() {
               type="password"
               className="form-control"
               required
-              placeholder="••••••••"
+              placeholder=""
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               id="admin-password"

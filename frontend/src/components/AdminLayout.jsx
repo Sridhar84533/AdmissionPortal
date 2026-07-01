@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { LayoutDashboard, MessageSquare, LogOut, ShieldCheck, Menu, X } from 'lucide-react';
 
 export const AdminLayout = ({ children }) => {
-  const { user, logout } = useAuth();
+  const { adminUser, adminLogout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +15,7 @@ export const AdminLayout = ({ children }) => {
   }, [location.pathname]);
 
   const handleLogout = () => {
-    logout();
+    adminLogout();
     navigate('/admin/login');
   };
 
@@ -106,7 +106,7 @@ export const AdminLayout = ({ children }) => {
             Signed in as
           </div>
           <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0f172a', paddingLeft: '0.5rem', marginBottom: '1rem' }}>
-            {user?.name || 'Admin'}
+            {adminUser?.name || 'Admin'}
           </div>
           <button
             onClick={handleLogout}

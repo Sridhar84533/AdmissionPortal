@@ -32,28 +32,28 @@ import AdminDashboard from './pages/AdminDashboard';
 
 // ─── Route Guards ─────────────────────────────────────────────────────────────
 
-/** Redirect authenticated users away from public login/register pages */
+/** Redirect authenticated applicants away from /login and /register */
 const PublicRoute = ({ children }) => {
-  const { user, token } = useAuth();
-  if (token && user) {
-    return <Navigate to={user.role === 'admin' ? '/admin' : '/dashboard'} replace />;
+  const { applicantUser, applicantToken } = useAuth();
+  if (applicantToken && applicantUser) {
+    return <Navigate to="/dashboard" replace />;
   }
   return children;
 };
 
-/** Allow only logged-in applicants */
+/** Allow only logged-in applicants (uses its own session — admin session unaffected) */
 const ApplicantRoute = ({ children }) => {
-  const { user, token } = useAuth();
-  if (!token || !user) return <Navigate to="/login" replace />;
-  if (user.role !== 'applicant') return <Navigate to="/admin" replace />;
+  const { applicantUser, applicantToken } = useAuth();
+  if (!applicantToken || !applicantUser) return <Navigate to="/login" replace />;
+  if (applicantUser.role !== 'applicant') return <Navigate to="/login" replace />;
   return <Layout>{children}</Layout>;
 };
 
-/** Allow only logged-in admins */
+/** Allow only logged-in admins (uses its own session — applicant session unaffected) */
 const AdminRoute = ({ children }) => {
-  const { user, token } = useAuth();
-  if (!token || !user) return <Navigate to="/admin/login" replace />;
-  if (user.role !== 'admin') return <Navigate to="/dashboard" replace />;
+  const { adminUser, adminToken } = useAuth();
+  if (!adminToken || !adminUser) return <Navigate to="/admin/login" replace />;
+  if (adminUser.role !== 'admin') return <Navigate to="/admin/login" replace />;
   return <AdminLayout>{children}</AdminLayout>;
 };
 

@@ -4,7 +4,7 @@ import { Check, X, RefreshCw, Eye, Download, Users, Mail, Phone, BookOpen, Gradu
 import { API_BASE } from '../config';
 
 export default function AdminDashboard() {
-  const { token } = useAuth();
+  const { adminToken: token } = useAuth();
   const [applications, setApplications] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
   const [loading, setLoading] = useState(true);

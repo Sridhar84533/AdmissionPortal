@@ -4,7 +4,13 @@ import { MessageSquare, Paperclip, Send, User, ShieldCheck } from 'lucide-react'
 import { API_BASE } from '../config';
 
 export default function SupportFeedback() {
-  const { token, user } = useAuth();
+  const { token: applicantToken, user: applicantUser, adminToken, adminUser } = useAuth();
+  
+  // Dynamically select session based on page route
+  const isAdmin = window.location.pathname.startsWith('/admin');
+  const token = isAdmin ? adminToken : applicantToken;
+  const user = isAdmin ? adminUser : applicantUser;
+
   const [appNumber, setAppNumber] = useState('');
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
